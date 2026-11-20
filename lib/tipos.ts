@@ -38,4 +38,5 @@ export type Prestador = {
   trabajos: { titulo: string; tono: string }[];
   resenasDestacadas: Resena[];
   whatsapp: string; // número con lada país, sin símbolos
+  verificado: boolean; // identidad verificada por el equipo
 };

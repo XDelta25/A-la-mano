@@ -18,6 +18,7 @@ const enlaces = [
   { href: "/", texto: "Inicio" },
   { href: "/buscar", texto: "Buscar" },
   { href: "/solicitar", texto: "Solicitar servicio" },
+  { href: "/cuenta", texto: "Mi cuenta" },
 ];
 
 export function Header() {
@@ -36,7 +37,7 @@ export function Header() {
             </Link>
           ))}
           <Link
-            href="/solicitar"
+            href="/cuenta"
             className="ml-2 flex min-h-11 items-center rounded-full border-[1.5px] border-primario px-4 text-[15px] font-bold text-primario hover:bg-chip"
           >
             Ofrecer mis servicios

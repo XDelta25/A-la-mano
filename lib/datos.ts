@@ -21,6 +21,7 @@ type FilaPrestador = {
   num_resenas: number;
   km: number;
   whatsapp: string;
+  verificado: boolean;
   categorias: { nombre: string } | null;
   trabajos?: { titulo: string; tono: string }[];
   resenas?: {
@@ -72,6 +73,7 @@ function aPrestador(f: FilaPrestador): Prestador {
       texto: r.texto,
     })),
     whatsapp: f.whatsapp,
+    verificado: f.verificado,
   };
 }
 

@@ -60,10 +60,12 @@ async function PerfilContenido({ params }: Props) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="flex items-center gap-1.5 rounded-[14px] bg-chip px-2.5 py-1.5 text-xs font-bold text-chip-texto">
-            <Icon nombre="escudo" size={14} grosor={2.2} />
-            Identidad verificada
-          </span>
+          {p.verificado && (
+            <span className="flex items-center gap-1.5 rounded-[14px] bg-chip px-2.5 py-1.5 text-xs font-bold text-chip-texto">
+              <Icon nombre="escudo" size={14} grosor={2.2} />
+              Identidad verificada
+            </span>
+          )}
           <span className="flex items-center gap-1.5 rounded-[14px] bg-fondo px-2.5 py-1.5 text-xs font-bold text-suave">
             <Icon nombre="ubicacion" size={14} grosor={2.2} />A{" "}
             {p.km.toFixed(1)} km de ti

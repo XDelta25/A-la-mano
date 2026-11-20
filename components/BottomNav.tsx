@@ -8,7 +8,7 @@ const items = [
   { href: "/", texto: "Inicio", icono: "inicio" },
   { href: "/buscar", texto: "Buscar", icono: "buscar" },
   { href: "/solicitar", texto: "Solicitar", icono: "solicitar" },
-  { href: "#", texto: "Mi cuenta", icono: "cuenta" },
+  { href: "/cuenta", texto: "Mi cuenta", icono: "cuenta" },
 ];
 
 export function BottomNav() {
