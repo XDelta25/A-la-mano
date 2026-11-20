@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { Estrella } from "./Icon";
-import {
-  nombreCategoria,
-  textoDisponibilidad,
-  type Prestador,
-} from "@/lib/datos";
+import { textoDisponibilidad, type Prestador } from "@/lib/tipos";
 
 export function PrestadorCard({ p }: { p: Prestador }) {
   return (
@@ -22,7 +18,7 @@ export function PrestadorCard({ p }: { p: Prestador }) {
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="text-base font-bold">{p.nombre}</span>
           <span className="text-[13px] text-suave">
-            {nombreCategoria(p.categoria)} · {p.especialidad}
+            {p.categoriaNombre} · {p.especialidad}
           </span>
         </div>
         <span className="shrink-0 text-[13px] font-semibold text-suave">

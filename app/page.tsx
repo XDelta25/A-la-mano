@@ -1,13 +1,46 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { PrestadorCard } from "@/components/PrestadorCard";
-import { categorias, prestadores } from "@/lib/datos";
+import { Cargando } from "@/components/Cargando";
+import { getCategorias, getPrestadores } from "@/lib/datos";
+
+// Los componentes async de abajo piden datos a Supabase. Van dentro de <Suspense>
+// para que el resto de la página aparezca de inmediato mientras llegan.
+
+async function Oficios() {
+  const categorias = await getCategorias();
+  return (
+    <div className="grid grid-cols-4 gap-2.5 md:grid-cols-7 md:gap-3">
+      {categorias.map((c) => (
+        <Link
+          key={c.id}
+          href="/buscar"
+          className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-2xl border border-borde bg-white px-0.5 py-2.5 text-primario transition-colors hover:border-primario md:min-h-[104px]"
+        >
+          <Icon nombre={c.icono} size={26} grosor={1.8} />
+          <span className="text-center text-xs font-semibold text-tinta md:text-sm">
+            {c.nombre}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+async function Destacados() {
+  // getPrestadores ya viene ordenado por calificación; tomamos los 3 mejores.
+  const destacados = (await getPrestadores()).slice(0, 3);
+  return (
+    <div className="grid gap-3 md:grid-cols-3 md:gap-4">
+      {destacados.map((p) => (
+        <PrestadorCard key={p.id} p={p} />
+      ))}
+    </div>
+  );
+}
 
 export default function Inicio() {
-  const destacados = [...prestadores]
-    .sort((a, b) => b.calificacion - a.calificacion)
-    .slice(0, 3);
-
   return (
     <>
       {/* Portada: clara en celular, banda azul oscuro en escritorio */}
@@ -34,20 +67,9 @@ export default function Inicio() {
         <h2 className="sr-only md:not-sr-only md:mb-5 md:font-display md:text-[28px] md:font-bold">
           Oficios más buscados
         </h2>
-        <div className="grid grid-cols-4 gap-2.5 md:grid-cols-7 md:gap-3">
-          {categorias.map((c) => (
-            <Link
-              key={c.id}
-              href="/buscar"
-              className="flex min-h-[82px] flex-col items-center justify-center gap-2 rounded-2xl border border-borde bg-white px-0.5 py-2.5 text-primario transition-colors hover:border-primario md:min-h-[104px]"
-            >
-              <Icon nombre={c.icono} size={26} grosor={1.8} />
-              <span className="text-center text-xs font-semibold text-tinta md:text-sm">
-                {c.nombre}
-              </span>
-            </Link>
-          ))}
-        </div>
+        <Suspense fallback={<Cargando alto="h-[82px]" />}>
+          <Oficios />
+        </Suspense>
       </section>
 
       <section className="mx-auto max-w-5xl px-5 pt-7 md:pt-12">
@@ -59,11 +81,9 @@ export default function Inicio() {
             Ver todos
           </Link>
         </div>
-        <div className="grid gap-3 md:grid-cols-3 md:gap-4">
-          {destacados.map((p) => (
-            <PrestadorCard key={p.id} p={p} />
-          ))}
-        </div>
+        <Suspense fallback={<Cargando alto="h-32" />}>
+          <Destacados />
+        </Suspense>
       </section>
 
       <section className="mx-auto hidden max-w-5xl px-5 pb-14 pt-12 md:block">

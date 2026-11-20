@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body className="min-h-screen bg-fondo font-sans text-tinta antialiased">
         <Header />
         <main className="pb-24 md:pb-0">{children}</main>
-        <BottomNav />
+        <Suspense fallback={null}>
+          <BottomNav />
+        </Suspense>
         <footer className="hidden border-t border-borde md:block">
           <div className="mx-auto flex max-w-5xl justify-between px-5 py-6 text-sm text-suave">
             <span>A la mano · prototipo de demostración</span>

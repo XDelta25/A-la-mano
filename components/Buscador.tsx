@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Icon } from "./Icon";
 import { PrestadorCard } from "./PrestadorCard";
-import { categorias, nombreCategoria, prestadores } from "@/lib/datos";
+import type { Categoria, Prestador } from "@/lib/tipos";
 
 type Orden = "calificacion" | "distancia";
 
@@ -12,7 +12,15 @@ const chipBase =
 const chipOn = "border-primario bg-primario text-white";
 const chipOff = "border-borde bg-white text-tinta hover:border-primario";
 
-export function Buscador() {
+// Los datos llegan ya cargados desde la página (app/buscar/page.tsx).
+// Este componente solo se encarga de filtrar y ordenar en el navegador.
+export function Buscador({
+  prestadores,
+  categorias,
+}: {
+  prestadores: Prestador[];
+  categorias: Categoria[];
+}) {
   const [texto, setTexto] = useState("");
   const [categoria, setCategoria] = useState<string | null>(null);
   const [soloHoy, setSoloHoy] = useState(false);
@@ -26,7 +34,7 @@ export function Buscador() {
       .filter(
         (p) =>
           !q ||
-          [p.nombre, p.especialidad, nombreCategoria(p.categoria), ...p.servicios]
+          [p.nombre, p.especialidad, p.categoriaNombre, ...p.servicios]
             .join(" ")
             .toLowerCase()
             .includes(q),
@@ -36,7 +44,7 @@ export function Buscador() {
           ? b.calificacion - a.calificacion
           : a.km - b.km,
       );
-  }, [texto, categoria, soloHoy, orden]);
+  }, [prestadores, texto, categoria, soloHoy, orden]);
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-3 px-5 py-4 md:py-8">

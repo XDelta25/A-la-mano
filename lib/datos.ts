@@ -1,208 +1,106 @@
-// Datos de ejemplo. Más adelante esto se reemplaza por consultas a Supabase.
+// Consultas a Supabase. Cada función devuelve datos con la misma forma
+// (tipos en lib/tipos.ts) que antes tenían los datos de ejemplo,
+// así que las páginas casi no cambian.
 
-export type Categoria = { id: string; nombre: string; icono: string };
+import { supabase } from "./supabase";
+import type { Categoria, Disponibilidad, Prestador } from "./tipos";
 
-export const categorias: Categoria[] = [
-  { id: "carpinteria", nombre: "Carpintería", icono: "carpinteria" },
-  { id: "herreria", nombre: "Herrería", icono: "herreria" },
-  { id: "plomeria", nombre: "Plomería", icono: "plomeria" },
-  { id: "electricidad", nombre: "Electricidad", icono: "electricidad" },
-  { id: "pintura", nombre: "Pintura", icono: "pintura" },
-  { id: "albanileria", nombre: "Albañilería", icono: "albanileria" },
-  { id: "jardineria", nombre: "Jardinería", icono: "jardineria" },
-];
-
-export type Disponibilidad = "hoy" | "manana" | "semana";
-
-export const textoDisponibilidad: Record<Disponibilidad, string> = {
-  hoy: "Disponible hoy",
-  manana: "Desde mañana",
-  semana: "Esta semana",
-};
-
-export type Resena = {
-  autor: string;
-  iniciales: string;
-  cuando: string;
-  trabajo: string;
-  estrellas: number;
-  texto: string;
-};
-
-export type Prestador = {
+// Forma de una fila tal como llega de la base de datos (columnas en snake_case).
+type FilaPrestador = {
   id: string;
   nombre: string;
   iniciales: string;
   tono: string;
-  categoria: string; // id de categoría
+  categoria_id: string;
   especialidad: string;
-  calificacion: number;
-  resenas: number;
-  km: number;
-  disponibilidad: Disponibilidad;
-  anios: number;
   descripcion: string;
   servicios: string[];
-  trabajos: { titulo: string; tono: string }[];
-  resenasDestacadas: Resena[];
-  whatsapp: string; // número con lada país, sin símbolos
+  anios: number;
+  disponibilidad: Disponibilidad;
+  calificacion: number;
+  num_resenas: number;
+  km: number;
+  whatsapp: string;
+  categorias: { nombre: string } | null;
+  trabajos?: { titulo: string; tono: string }[];
+  resenas?: {
+    autor: string;
+    iniciales: string;
+    trabajo: string;
+    estrellas: number;
+    texto: string;
+    created_at: string;
+  }[];
 };
 
-export const prestadores: Prestador[] = [
-  {
-    id: "ramon-trevino",
-    nombre: "Ramón Treviño",
-    iniciales: "RT",
-    tono: "#CFDAE4",
-    categoria: "herreria",
-    especialidad: "Portones y barandales",
-    calificacion: 4.9,
-    resenas: 38,
-    km: 2.1,
-    disponibilidad: "hoy",
-    anios: 6,
-    descripcion:
-      "Fabricación e instalación de portones, barandales y ventanas. Trabajo con material de calidad y entrego en la fecha acordada.",
-    servicios: ["Portones", "Barandales", "Ventanas", "Reparaciones"],
-    trabajos: [
-      { titulo: "Portón corredizo", tono: "#CFDAE4" },
-      { titulo: "Barandal de escalera", tono: "#D9DDE2" },
-      { titulo: "Ventana con protección", tono: "#C3D0DC" },
-    ],
-    resenasDestacadas: [
-      {
-        autor: "Ana M.",
-        iniciales: "AM",
-        cuando: "Hace 2 semanas",
-        trabajo: "Portón corredizo",
-        estrellas: 5,
-        texto:
-          "Quedó muy bien el portón, llegó puntual y limpió todo al terminar.",
-      },
-    ],
-    whatsapp: "5210000000000",
-  },
-  {
-    id: "jorge-martinez",
-    nombre: "Jorge Martínez",
-    iniciales: "JM",
-    tono: "#D9DDE2",
-    categoria: "herreria",
-    especialidad: "Ventanas y protecciones",
-    calificacion: 4.8,
-    resenas: 27,
-    km: 3.0,
-    disponibilidad: "hoy",
-    anios: 9,
-    descripcion:
-      "Protecciones, ventanas y puertas de herrería a la medida, con acabado en pintura electrostática.",
-    servicios: ["Ventanas", "Protecciones", "Puertas"],
-    trabajos: [
-      { titulo: "Protección de ventana", tono: "#D9DDE2" },
-      { titulo: "Puerta de entrada", tono: "#CFDAE4" },
-      { titulo: "Reja de patio", tono: "#C3D0DC" },
-    ],
-    resenasDestacadas: [],
-    whatsapp: "5210000000000",
-  },
-  {
-    id: "esteban-cortes",
-    nombre: "Esteban Cortés",
-    iniciales: "EC",
-    tono: "#CFDAE4",
-    categoria: "herreria",
-    especialidad: "Soldadura y estructuras",
-    calificacion: 4.7,
-    resenas: 41,
-    km: 4.6,
-    disponibilidad: "manana",
-    anios: 12,
-    descripcion:
-      "Soldadura de estructuras metálicas, techos y cobertizos para casas y negocios.",
-    servicios: ["Estructuras", "Techos", "Cobertizos"],
-    trabajos: [
-      { titulo: "Techo de cochera", tono: "#CFDAE4" },
-      { titulo: "Estructura de local", tono: "#D9DDE2" },
-      { titulo: "Cobertizo", tono: "#C3D0DC" },
-    ],
-    resenasDestacadas: [],
-    whatsapp: "5210000000000",
-  },
-  {
-    id: "hector-salinas",
-    nombre: "Héctor Salinas",
-    iniciales: "HS",
-    tono: "#D9DDE2",
-    categoria: "herreria",
-    especialidad: "Rejas y reparaciones",
-    calificacion: 4.6,
-    resenas: 19,
-    km: 5.2,
-    disponibilidad: "semana",
-    anios: 4,
-    descripcion:
-      "Reparación y fabricación de rejas, cerraduras y herrajes para el hogar.",
-    servicios: ["Rejas", "Cerraduras", "Reparaciones"],
-    trabajos: [
-      { titulo: "Reja frontal", tono: "#D9DDE2" },
-      { titulo: "Reparación de portón", tono: "#CFDAE4" },
-      { titulo: "Herrajes", tono: "#C3D0DC" },
-    ],
-    resenasDestacadas: [],
-    whatsapp: "5210000000000",
-  },
-  {
-    id: "luis-garza",
-    nombre: "Luis Garza",
-    iniciales: "LG",
-    tono: "#D9DDE2",
-    categoria: "carpinteria",
-    especialidad: "Closets y cocinas",
-    calificacion: 4.8,
-    resenas: 52,
-    km: 3.4,
-    disponibilidad: "manana",
-    anios: 15,
-    descripcion:
-      "Cocinas integrales, closets y muebles a medida. Diseño y fabricación en madera y melamina.",
-    servicios: ["Cocinas", "Closets", "Muebles a medida"],
-    trabajos: [
-      { titulo: "Cocina integral", tono: "#D9DDE2" },
-      { titulo: "Closet empotrado", tono: "#CFDAE4" },
-      { titulo: "Mueble de baño", tono: "#C3D0DC" },
-    ],
-    resenasDestacadas: [],
-    whatsapp: "5210000000000",
-  },
-  {
-    id: "mario-cantu",
-    nombre: "Mario Cantú",
-    iniciales: "MC",
-    tono: "#C3D0DC",
-    categoria: "plomeria",
-    especialidad: "Instalaciones y reparaciones",
-    calificacion: 4.8,
-    resenas: 44,
-    km: 1.8,
-    disponibilidad: "hoy",
-    anios: 10,
-    descripcion:
-      "Instalación y reparación de tuberías, calentadores y baños. Atiendo urgencias.",
-    servicios: ["Fugas", "Calentadores", "Baños"],
-    trabajos: [
-      { titulo: "Instalación de baño", tono: "#C3D0DC" },
-      { titulo: "Calentador", tono: "#CFDAE4" },
-      { titulo: "Cambio de tubería", tono: "#D9DDE2" },
-    ],
-    resenasDestacadas: [],
-    whatsapp: "5210000000000",
-  },
-];
-
-export function buscarPrestador(id: string) {
-  return prestadores.find((p) => p.id === id);
+function haceCuanto(iso: string) {
+  const dias = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (dias < 1) return "Hoy";
+  if (dias < 7) return `Hace ${dias} ${dias === 1 ? "día" : "días"}`;
+  if (dias < 30) {
+    const s = Math.floor(dias / 7);
+    return `Hace ${s} ${s === 1 ? "semana" : "semanas"}`;
+  }
+  const m = Math.floor(dias / 30);
+  return `Hace ${m} ${m === 1 ? "mes" : "meses"}`;
 }
 
-export function nombreCategoria(id: string) {
-  return categorias.find((c) => c.id === id)?.nombre ?? id;
+// Convierte una fila de la base de datos en el tipo Prestador que usa la interfaz.
+function aPrestador(f: FilaPrestador): Prestador {
+  return {
+    id: f.id,
+    nombre: f.nombre,
+    iniciales: f.iniciales,
+    tono: f.tono,
+    categoria: f.categoria_id,
+    categoriaNombre: f.categorias?.nombre ?? f.categoria_id,
+    especialidad: f.especialidad,
+    calificacion: Number(f.calificacion),
+    resenas: f.num_resenas,
+    km: Number(f.km),
+    disponibilidad: f.disponibilidad,
+    anios: f.anios,
+    descripcion: f.descripcion,
+    servicios: f.servicios,
+    trabajos: f.trabajos ?? [],
+    resenasDestacadas: (f.resenas ?? []).map((r) => ({
+      autor: r.autor,
+      iniciales: r.iniciales,
+      cuando: haceCuanto(r.created_at),
+      trabajo: r.trabajo,
+      estrellas: r.estrellas,
+      texto: r.texto,
+    })),
+    whatsapp: f.whatsapp,
+  };
+}
+
+export async function getCategorias(): Promise<Categoria[]> {
+  const { data, error } = await supabase
+    .from("categorias")
+    .select("id, nombre, icono")
+    .order("orden");
+  if (error) throw new Error(`No se pudieron cargar las categorías: ${error.message}`);
+  return data;
+}
+
+export async function getPrestadores(): Promise<Prestador[]> {
+  const { data, error } = await supabase
+    .from("prestadores")
+    .select("*, categorias(nombre)")
+    .order("calificacion", { ascending: false });
+  if (error) throw new Error(`No se pudieron cargar los prestadores: ${error.message}`);
+  return (data as unknown as FilaPrestador[]).map(aPrestador);
+}
+
+export async function getPrestador(id: string): Promise<Prestador | null> {
+  const { data, error } = await supabase
+    .from("prestadores")
+    .select(
+      "*, categorias(nombre), trabajos(titulo, tono), resenas(autor, iniciales, trabajo, estrellas, texto, created_at)",
+    )
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`No se pudo cargar el perfil: ${error.message}`);
+  return data ? aPrestador(data as unknown as FilaPrestador) : null;
 }
